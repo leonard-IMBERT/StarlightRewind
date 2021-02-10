@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Starlight Movie</title>
-  <link rel="stylesheet" href="/ressources/movie.css">
+  <title>Starlight Rewind</title>
+  <link rel="stylesheet" href="ressources/movie.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="ressources/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="ressources/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="ressources/favicon-16x16.png">
+  <link rel="manifest" href="ressources/site.webmanifest">
 </head>
 <body>
   <div id="content">
@@ -11,12 +15,17 @@
     <span id="text">Loading movie</span>
     <span id="title">Turn 0</span>
     <div id="control">
-        <a id="nav-first"></a>
-        <a id="nav-prev"></a>
-        <a id="nav-next"></a>
-        <a id="nav-last"></a>
+      <img id="first" class="nav" src="ressources/images/arrow-first.png" alt="First">
+      <img id="prev" class="nav" src="ressources/images/arrow-prev.png" alt="Previous">
+      <img id="next" class="nav" src="ressources/images/arrow-next.png" alt="Next">
+      <img id="last" class="nav" src="ressources/images/arrow-last.png" alt="Last">
+    </div>
+    <div id="credits">
+      <span>Made by <a href="https://github.com/leonard-IMBERT">Tigri</a></span>
+      <span>Source code on <a href="https://github.com/leonard-IMBERT/StarlightRewind">Github</a></span>
+      <span>All credits for images and texts goes to LoneStarNorth (<a href="https://twitter.com/LoneStarNorth">@LoneStarNorth</a> on twitter)</span>
     </div>
   </div>
-  <script src="/scripts/Movie.js"></script>
+  <script src="scripts/Movie.js"></script>
 </body>
 </html>
