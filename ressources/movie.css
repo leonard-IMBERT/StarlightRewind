@@ -1,0 +1,62 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#content {
+  height:100%;
+  width: 100%;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+}
+
+#content #background {
+  margin: auto;
+  height: 90%;
+}
+
+#content span {
+  background-color: black;
+  color: white;
+}
+
+#content #text {
+  position: absolute;
+  bottom: 50px;
+  font-size: medium;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+#content #title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: x-large;
+}
+
+
+/* background animation */
+.fadeIn {
+  animation: fadeIn ease 0.5s;
+}
+
+.fadeOut {
+  animation: fadeOut ease 0.5s;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
