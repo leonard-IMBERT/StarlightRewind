@@ -2,6 +2,7 @@ const background = document.querySelector("#background");
 const text = document.querySelector("#text");
 const title = document.querySelector("#title");
 const body = document.querySelector("body");
+const navs = document.querySelectorAll(".nav");
 
 if(background == null || text == null) {
   throw new Error("Malformed Html");
@@ -13,35 +14,66 @@ if(background == null || text == null) {
  **/
 let STATUS = 0;
 
-// position in the movie
+// position in the story
 let turn = 0;
 let element = 0;
 
-// if anchor
-const parsed = document.location.hash.match(/#([0-9]+);([0-9]+)/);
-if(parsed != null) {
-  turn = Number(parsed[1]);
-  element = Number(parsed[2]);
-}
-
 // Control variables
-let prev = -1;
-let progress = 0;
-
 let next = 0;
 
 let end = false;
 
 // Storage variables
 let imgSource = "";
+let movieJson = null;
+
+// if anchor
+function readHash(hash) {
+  console.log("reading");
+  const parsed = hash.match(/#([0-9]+);([0-9]+)/);
+  if(parsed != null) {
+    turn = Number(parsed[1]);
+    element = Number(parsed[2]);
+
+    let imgFound = "";
+    let curElem = element;
+    let curTurn = turn;
+
+    // Find nearest image
+    while(imgFound === "" && curTurn >= 0) {
+      if(movieJson[curTurn].diapo[curElem].type === "image") {
+        imgFound = movieJson[curTurn].diapo[curElem].content;
+      } else {
+        curElem -= 1;
+        if (curElem < 0) {
+          curTurn -= 1;
+          if(curTurn >= 0) curElem = movieJson[turn].diapo.length;
+        }
+      }
+    }
+
+    // Refresh image, even if not found
+    imgSource = imgFound;
+    background.classList.add("fadeOut");
+    // If anchoring an image, load next text
+    if(curElem === element && curTurn === turn) {
+      next = 1;
+    }
+  } else {
+    console.warn(`Invalid hash ${hash}`);
+  }
+}
 
 // background animation
 
 background.addEventListener("animationend", (ev) => {
-  if(ev.animationName === "fadeIn") {
-    background.classList.remove("fadeIn");
-  } else if (ev.animationName === "fadeOut") {
+  if(ev.animationName === "fadeIn") background.classList.remove("fadeIn");
+  else if (ev.animationName === "fadeOut") {
     background.setAttribute("src", imgSource);
+    if(imgSource == null || imgSource === "") {
+      background.classList.remove("fadeOut");
+      background.classList.add("fadeIn");
+    }
   }
 });
 
@@ -51,21 +83,37 @@ background.addEventListener("loadend", (ev) => {
 });
 
 
-
-
-const MovieRequest = new Request("/scripts/movie.json");
-let movieJson = null;
-
-
+// Navigation control
 body.addEventListener("keyup", (ev) => {
-  if(ev.code === "Space" || ev.code === "ArrowRight") {
-    next = 1;
-  } else if (ev.code === "ArrowLeft") {
-    next = -1;
-  }
+  if(ev.code === "Space" || ev.code === "ArrowRight") next = 1;
+  else if (ev.code === "ArrowLeft") next = -1;
 });
 
-function step(timestamp) {
+navs.forEach(element => element.addEventListener("click", (ev) => {
+  switch(ev.target.id) {
+    case "first":
+      document.location.hash = "#0;0";
+      readHash(document.location.hash);
+      STATUS = 0;
+      break;
+    case "prev":
+      next = -1;
+      break;
+    case "next":
+      next = 1;
+      break;
+    case "last":
+      document.location.hash = `#${movieJson.length - 1};0`;
+      readHash(document.location.hash);
+      STATUS = 0;
+      break;
+  }
+}));
+
+
+
+// Loop function
+function step() {
   if(STATUS === 0) {
     document.location.hash = `#${turn};${element}`
     const elem = movieJson[turn].diapo[element];
@@ -73,11 +121,9 @@ function step(timestamp) {
     if(elem.type === "text") {
       if(elem.content.toLowerCase().match(/turn [0-9]+/) != null) {
         text.hidden = true;
-        background.hidden = true;
         title.hidden = false;
         title.textContent = elem.content;
       } else {
-        background.hidden = false;
         text.hidden = false;
         title.hidden = true;
         text.textContent = elem.content;
@@ -97,7 +143,6 @@ function step(timestamp) {
     STATUS = 1
   }
   if(STATUS === 1) {
-    //if(progress > TIME_BETWEEN_SLIDE) {
     if(next === 1) {
       element += 1;
       if(element === movieJson[turn].diapo.length) {
@@ -122,19 +167,16 @@ function step(timestamp) {
 
       STATUS = 0;
     }
-    /*} else {
-      progress += timestamp - prev;
-      prev = timestamp;
-    }*/
   }
-
   requestAnimationFrame(step);
 }
 
+const MovieRequest = new Request("scripts/movie.json");
+
 fetch(MovieRequest).then((res) => res.json()).then((res) => {
-  movieJson = res
+  movieJson = res;
+  readHash(document.location.hash);
   requestAnimationFrame((ts) => {
-    prev = ts
     step(ts);
   });
 });
