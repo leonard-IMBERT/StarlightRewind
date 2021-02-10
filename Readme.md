@@ -22,3 +22,4 @@ $ npm run start
 | Name | Description | Default value |
 | ---- | ----------- | ------------- |
 | STARLIGHT_REWIND_PORT | The port on which the server will listen | 3000 |
+| STARLIGHT_REWIND_PREFIX | Url prefix to use | "" |
